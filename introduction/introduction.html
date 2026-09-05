@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElevateAI | Kinematix Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                fontFamily: { sans: ['Inter', 'sans-serif'] },
+                extend: {
+                    colors: { apple: { dark: '#000000', gray: '#f5f5f7', text: '#1d1d1f', link: '#06c' } },
+                    animation: { 'fade-up': 'fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards' },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(40px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #000; color: #f5f5f7; overflow-x: hidden; }
+        .text-gradient { background: linear-gradient(135deg, #aeb5df 0%, #6b76e2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .reveal { opacity: 0; transform: translateY(50px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+    </style>
+</head>
+<body class="antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Sticky Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-panel border-b-0 py-3">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center text-xs font-medium tracking-wide text-white/80">
+            <span class="font-bold text-white tracking-widest">ELEVATE AI</span>
+            <div class="space-x-8 hidden sm:block">
+                <a href="#overview" class="hover:text-white transition">Overview</a>
+                <a href="#tech" class="hover:text-white transition">Technology</a>
+                <a href="#metrics" class="hover:text-white transition">Metrics</a>
+                <a href="#ai" class="hover:text-white transition">AI Coach</a>
+            </div>
+            <a href="/index.html" class="bg-white text-black px-4 py-1.5 rounded-full hover:scale-105 transition font-semibold">Launch App</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="overview" class="min-h-screen flex flex-col items-center justify-center pt-24 pb-12 px-6 text-center">
+        <h2 class="text-xl md:text-2xl font-medium text-indigo-400 mb-4 tracking-widest uppercase animate-fade-up" style="animation-delay: 0.1s;">Kinematix Pro</h2>
+        <h1 class="text-6xl md:text-8xl font-bold tracking-tighter mb-6 animate-fade-up" style="animation-delay: 0.2s;">
+            Elite biomechanics.<br><span class="text-gradient">Zero hardware.</span>
+        </h1>
+        <p class="text-xl text-gray-400 max-w-2xl mb-12 font-light tracking-tight animate-fade-up" style="animation-delay: 0.3s;">
+            Transform any standard webcam into a force platform. Real-time countermovement jump telemetry and force-velocity diagnostics powered by computer vision.
+        </p>
+        
+        <!-- Hero Image -->
+        <div class="w-full max-w-5xl h-[380px] sm:h-[480px] md:h-[580px] rounded-3xl overflow-hidden animate-fade-up shadow-2xl shadow-indigo-500/20 border border-white/10" style="animation-delay: 0.5s;">
+            <img src="index.png" alt="ElevateAI Dashboard Overview" onerror="this.onerror=null; this.src='index.jpg';">
+        </div>
+    </section>
+
+    <!-- Problem Statement -->
+    <section class="bg-apple-gray text-apple-text py-32 px-6">
+        <div class="max-w-4xl mx-auto text-center reveal">
+            <h2 class="text-5xl md:text-7xl font-bold tracking-tighter mb-8">The field is blind.</h2>
+            <p class="text-2xl md:text-3xl font-medium text-gray-500 leading-tight">
+                Traditional force plates cost thousands. Optical contact mats only measure flight time. <br><br>
+                <span class="text-black">ElevateAI measures eccentric rate, force development, and unilateral deficits instantly. No cables. No setup. Pure kinetic truth.</span>
+            </p>
+        </div>
+    </section>
+
+    <!-- Technology Section -->
+    <section id="tech" class="py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <h3 class="text-4xl md:text-6xl font-bold tracking-tighter mb-6">Skeletal tracking at <br>60 frames per second.</h3>
+                    <p class="text-xl text-gray-400 mb-8 font-light">
+                        Leveraging Google MediaPipe Pose estimation, the engine tracks hip, knee, and ankle keypoints frame-by-frame. Dynamic spatial calibration calculates a custom height-proportional scale, completely removing hardcoded camera depth assumptions.
+                    </p>
+                    <ul class="space-y-4 text-lg text-gray-300">
+                        <li class="flex items-center gap-3"><svg class="w-6 h-6 text-indigo-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> NumPy Numerical Gradients</li>
+                        <li class="flex items-center gap-3"><svg class="w-6 h-6 text-indigo-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Dynamic Pixel-to-Meter Calibration</li>
+                        <li class="flex items-center gap-3"><svg class="w-6 h-6 text-indigo-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Variable FPS Correction</li>
+                    </ul>
+                </div>
+                
+                <!-- Live Pose Capture with fallback -->
+                <div class="h-[380px] sm:h-[480px] rounded-3xl overflow-hidden reveal shadow-2xl border border-white/10 bg-slate-900">
+                    <img src="measure.jpg" alt="Live Pose Estimation Studio" onerror="this.onerror=null; this.src='measure.png';">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Metrics Bento Box -->
+    <section id="metrics" class="py-24 px-6 bg-[#0a0a0c]">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-5xl md:text-7xl font-bold tracking-tighter text-center mb-16 reveal">Pro-grade metrics. <br>Simplified.</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Bento 1: Waveform -->
+                <div class="glass-panel p-8 rounded-3xl reveal col-span-1 lg:col-span-2 flex flex-col justify-between min-h-[340px] overflow-hidden">
+                    <div>
+                        <h4 class="text-gray-400 font-semibold mb-2 uppercase tracking-widest text-sm">Force Generation</h4>
+                        <h3 class="text-3xl md:text-4xl font-bold text-white mb-3">Peak Mechanical Power & GRF</h3>
+                        <p class="text-gray-400 text-sm max-w-xl">Real-time derivation of force-velocity waveforms and impulse power across braking and concentric propulsive phases.</p>
+                    </div>
+                    <div class="mt-6 h-48 rounded-2xl overflow-hidden border border-white/10 shadow-inner">
+                        <img src="index.png" alt="Waveform Telemetry Analysis" class="object-bottom" onerror="this.onerror=null; this.src='index.jpg';">
+                    </div>
+                </div>
+                
+                <!-- Bento 2: RSI -->
+                <div class="glass-panel p-8 rounded-3xl reveal flex flex-col justify-center min-h-[340px]">
+                    <h4 class="text-gray-400 font-semibold mb-2 uppercase tracking-widest text-sm">SSC Efficiency</h4>
+                    <h3 class="text-4xl font-bold text-white mb-4">RSI Index</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Measures stretch-shortening cycle (SSC) efficiency by comparing flight height directly against ground contraction time.</p>
+                </div>
+
+                <!-- Bento 3: Peak Force -->
+                <div class="glass-panel p-8 rounded-3xl reveal flex flex-col justify-center min-h-[340px]">
+                    <h4 class="text-gray-400 font-semibold mb-2 uppercase tracking-widest text-sm">Load Capacity</h4>
+                    <h3 class="text-4xl font-bold text-white mb-4">Peak Ground Force</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Quantifies maximum ground reaction force generated against gravity during the braking transition phase.</p>
+                </div>
+
+                <!-- Bento 4: Record History -->
+                <div class="glass-panel p-8 rounded-3xl reveal col-span-1 lg:col-span-2 flex flex-col sm:flex-row items-center justify-between min-h-[340px] overflow-hidden gap-6">
+                    <div class="w-full sm:w-1/2">
+                        <h4 class="text-gray-400 font-semibold mb-2 uppercase tracking-widest text-sm">Progression Tracking</h4>
+                        <h3 class="text-3xl md:text-4xl font-bold text-white mb-3">Historical Logs & Trends</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Automated CSV-backed data logging tracking neuromuscular readiness, personal records, and bilateral asymmetry over time.</p>
+                    </div>
+                    <div class="w-full sm:w-1/2 h-56 rounded-2xl overflow-hidden border border-white/10 shadow-lg">
+                        <img src="record.jpg" alt="Historical Jump Records" class="object-top" onerror="this.onerror=null; this.src='record.png';">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Coach Section with Pop-up Image -->
+    <section id="ai" class="bg-apple-gray text-apple-text py-32 px-6 overflow-hidden">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+            <div class="w-full lg:w-1/2 h-[420px] sm:h-[500px] rounded-3xl shadow-2xl border border-gray-200 overflow-hidden flex items-center justify-center reveal bg-white">
+                 <img src="pop_up.jpg" alt="Athlete Baseline Calibration Setup" onerror="this.onerror=null; this.src='pop_up.png';">
+            </div>
+
+            <div class="w-full lg:w-1/2 reveal">
+                <h2 class="text-5xl md:text-6xl font-bold tracking-tighter mb-6">Your personal sports scientist.</h2>
+                <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                    ElevateAI doesn't just record raw data; it contextualizes it. Powered by Google's Gemini AI, the system analyzes historical jump series to deliver tailored neuromuscular advice, spot fatigue indicators, and calibrate baseline physics to your exact body mass.
+                </p>
+                <a href="https://github.com" target="_blank" class="bg-black text-white px-7 py-3 rounded-full inline-flex items-center gap-3 font-semibold hover:scale-105 transition cursor-pointer">
+                    Explore on GitHub <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-gray-800 py-12 text-center text-gray-500 text-sm">
+        <p class="mb-2">Designed by Norman Lee Weng Hong • University of Malaya AI & CS</p>
+        <p>Built with FastAPI, MediaPipe, NumPy, and Tailwind CSS.</p>
+    </footer>
+
+    <!-- Scroll Reveal Handler -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const reveals = document.querySelectorAll(".reveal");
+            const revealOnScroll = () => {
+                const windowHeight = window.innerHeight;
+                const elementVisible = 120;
+                reveals.forEach((reveal) => {
+                    const elementTop = reveal.getBoundingClientRect().top;
+                    if (elementTop < windowHeight - elementVisible) {
+                        reveal.classList.add("active");
+                    }
+                });
+            };
+            window.addEventListener("scroll", revealOnScroll);
+            revealOnScroll();
+        });
+    </script>
+</body>
+</html>
