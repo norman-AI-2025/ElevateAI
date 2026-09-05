@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Biomechanics & Athletic Performance Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+          theme: { extend: { fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+            colors: { brand: { gradientStart: '#969fc8', gradientMid: '#aeb5df', gradientEnd: '#dbe2fa', lavender: '#8e97c9', dark: '#1e2338', muted: '#69728f', cardBg: '#ffffff', cardBorder: '#eff1f7', pillBg: '#f0f3fa' } }
+          } }
+        }
+    </script>
+    <style>
+        body { background-color: #f7f9fd; color: #1a1f36; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+        .hero-gradient { background: linear-gradient(180deg, #949ecb 0%, #aab3df 42%, #c9d2f2 78%, #f7f9fd 100%); }
+        .metric-card { transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 18px -2px rgba(60, 75, 120, 0.04), 0 2px 6px -1px rgba(60, 75, 120, 0.03); }
+        .metric-card:hover { transform: translateY(-2px); box-shadow: 0 10px 24px -4px rgba(60, 75, 120, 0.08), 0 4px 10px -2px rgba(60, 75, 120, 0.04); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-indigo-200">
+    
+    <!-- Mandatory Onboarding Modal -->
+    <div class="fixed inset-0 z-50 hidden items-center justify-center p-4 sm:p-6 overflow-y-auto" id="onboardingModal" style="background-color: rgba(15, 23, 42, 0.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+        <div class="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
+            <div class="px-6 sm:px-8 pt-7 pb-5 border-b border-slate-100 relative" style="background: linear-gradient(135deg, rgba(148, 158, 203, 0.12) 0%, rgba(201, 210, 242, 0.22) 100%);">
+                <!-- Close button removed to enforce mandatory completion -->
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-[11px] font-bold uppercase tracking-wider text-indigo-600 mb-2.5">
+                    <span class="w-2 h-2 rounded-full bg-indigo-500"></span> Telemetry Baseline Setup
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">New Athlete Profile</h2>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed max-w-md">Enter baseline physical measurements for precise biomechanical telemetry and power normalization.</p>
+            </div>
+            <form id="profileForm" class="p-6 sm:p-8 space-y-5" onsubmit="submitProfile(event)">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Full Name</label>
+                    <div class="relative flex items-center">
+                        <div class="absolute left-3.5 pointer-events-none text-slate-400 flex items-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                        </div>
+                        <input id="profName" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition font-medium" placeholder="e.g. Norman Vance" required type="text"/>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Age</label>
+                        <div class="relative flex items-center">
+                            <div class="absolute left-3.5 pointer-events-none text-slate-400 flex items-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect height="18" rx="2" ry="2" width="18" x="3" y="4"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+                            </div>
+                            <input id="profAge" class="w-full pl-10 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition font-medium" max="99" min="12" placeholder="24" required type="number"/>
+                            <span class="absolute right-3.5 text-xs font-semibold text-slate-400 uppercase">yrs</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Height</label>
+                        <div class="relative flex items-center">
+                            <div class="absolute left-3.5 pointer-events-none text-slate-400 flex items-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 10h-6M21 6h-8M21 14h-8M21 18h-6M3 6a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                            </div>
+                            <input id="profHeight" class="w-full pl-10 pr-14 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition font-medium" placeholder="182" required step="0.5" type="number"/>
+                            <div class="absolute right-1.5 flex items-center bg-slate-200/70 p-0.5 rounded-lg text-[10px] font-bold text-slate-600">
+                                <span class="px-1.5 py-0.5 bg-white text-indigo-600 rounded shadow-xs cursor-pointer">cm</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">Weight / Body Mass</label>
+                        <span class="text-[11px] text-indigo-600 font-semibold bg-indigo-50 px-2 py-0.5 rounded">Auto-calibrating</span>
+                    </div>
+                    <div class="relative flex items-center">
+                        <div class="absolute left-3.5 pointer-events-none text-slate-400 flex items-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                        </div>
+                        <input id="profWeight" class="w-full pl-10 pr-16 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition font-medium" placeholder="75.65" required step="0.05" type="number"/>
+                        <div class="absolute right-1.5 flex items-center bg-slate-200/70 p-0.5 rounded-lg text-[10px] font-bold text-slate-600">
+                            <span class="px-1.5 py-0.5 bg-white text-indigo-600 rounded shadow-xs cursor-pointer">kg</span>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1.5 flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 text-indigo-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="16" y2="12"></line><line x1="12" x2="12.01" y1="8" y2="8"></line></svg>
+                        Essential for Ground Reaction Force (GRF) & relative power W/kg calculations
+                    </p>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Discipline / Sport Focus</label>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 text-indigo-600 border border-indigo-200/80 shadow-xs cursor-pointer" type="button">Track & Field</button>
+                        <button class="px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 cursor-pointer" type="button">Basketball</button>
+                        <button class="px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 cursor-pointer" type="button">Volleyball</button>
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-slate-100 flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
+                    <!-- Cancel/Skip button removed to enforce mandatory completion -->
+                    <button class="w-full px-6 py-2.5 rounded-xl text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-2 cursor-pointer hover:opacity-90" style="background: linear-gradient(135deg, #8e97c9 0%, #6366f1 100%);" type="submit">
+                        <svg class="w-4 h-4 stroke-white" fill="none" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 8.5 2 15.5 12 22 22 15.5 22 8.5 12 2"></polygon><circle cx="12" cy="12" r="3.5"></circle></svg>
+                        Save & Calibrate Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <header class="w-full hero-gradient pt-5 pb-10 px-6 sm:px-10 lg:px-16">
+        <div class="mx-auto">
+            <section class="mt-8 pb-3">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-12 items-center text-white">
+                    <div class="flex flex-col md:border-r border-white/25 pr-6">
+                        <div class="flex items-center justify-between mb-1"><span class="text-sm font-medium tracking-wider uppercase text-white/80">Peak Power</span></div>
+                        <div class="flex items-baseline space-x-3">
+                            <span id="hero-power" class="text-5xl lg:text-6xl font-extrabold tracking-tight drop-shadow-sm">--</span>
+                            <div class="flex flex-col"><span class="text-lg font-bold text-white/90">W</span></div>
+                        </div>
+                        <span class="text-xs text-white/70 mt-1.5 font-medium">High Mechanical Output</span>
+                    </div>
+                    <div class="flex flex-col md:border-r border-white/25 pr-6">
+                        <div class="flex items-center justify-between mb-1"><span class="text-sm font-medium tracking-wider uppercase text-white/80">Vertical Jump (CMJ)</span><span class="text-xs px-2 py-0.5 rounded bg-emerald-500/25 border border-emerald-300/40 text-emerald-100 font-semibold">PR Tier</span></div>
+                        <div class="flex items-baseline space-x-3">
+                            <span id="hero-jump" class="text-5xl lg:text-6xl font-extrabold tracking-tight drop-shadow-sm">--</span>
+                            <div class="flex flex-col"><span class="text-lg font-bold text-white/90">cm</span></div>
+                        </div>
+                        <span class="text-xs text-white/70 mt-1.5 font-medium">Flight Time & Displacement</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="flex items-center justify-between mb-1"><span class="text-sm font-medium tracking-wider uppercase text-white/80">Peak Ground Force</span><span class="text-xs text-white/70">Target: 3,000 N</span></div>
+                        <div class="flex items-baseline space-x-3">
+                            <span id="hero-force" class="text-5xl lg:text-6xl font-extrabold tracking-tight drop-shadow-sm">--</span>
+                            <div class="flex flex-col"><span class="text-lg font-bold text-white/90">N</span></div>
+                        </div>
+                        <span class="text-xs text-white/70 mt-1.5 font-medium">Max Force Generation</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </header>
+
+    <main class="flex-1 w-full mx-auto px-6 sm:px-10 lg:px-16 -mt-3 pb-24">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full">
+            <div class="lg:col-span-8 space-y-7">
+                <section>
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-800 tracking-tight">Countermovement Jump Metrics</h2>
+                            <p class="text-xs text-slate-500 font-medium">Real-time kinetic parameters from AI engine</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col space-y-2.5">
+                        <div class="metric-card bg-white rounded-2xl p-4 sm:px-6 flex items-center justify-between border border-[#eff2f9]">
+                            <div class="flex items-baseline space-x-2 w-1/3"><span id="card-power" class="text-2xl font-bold text-slate-900 tracking-tight">-- W</span></div>
+                            <div class="w-1/3 text-center"><span class="text-sm font-semibold text-slate-700 block">Peak Mechanical Power</span><span class="text-[11px] text-slate-400">Propulsive Phase</span></div>
+                            <div class="w-1/3 flex justify-end"><div class="w-11 h-11 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-700"><svg class="w-6 h-6 stroke-slate-800" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"></path></svg></div></div>
+                        </div>
+                        <div class="metric-card bg-white rounded-2xl p-4 sm:px-6 flex items-center justify-between border border-[#eff2f9]">
+                            <div class="flex items-baseline space-x-2 w-1/3"><span id="card-force" class="text-2xl font-bold text-slate-900 tracking-tight">-- N</span></div>
+                            <div class="w-1/3 text-center"><span class="text-sm font-semibold text-slate-700 block">Peak Force (GRF)</span><span class="text-[11px] text-slate-400">Braking-to-Propulsion Transition</span></div>
+                            <div class="w-1/3 flex justify-end"><div class="w-11 h-11 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-700"><svg class="w-6 h-6 stroke-slate-800" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round"></path></svg></div></div>
+                        </div>
+                        <div class="metric-card bg-white rounded-2xl p-4 sm:px-6 flex items-center justify-between border border-[#eff2f9]">
+                            <div class="flex items-baseline space-x-2 w-1/3"><span id="card-jump" class="text-2xl font-bold text-slate-900 tracking-tight">-- cm</span></div>
+                            <div class="w-1/3 text-center"><span class="text-sm font-semibold text-slate-700 block">Jump Height (CMJ)</span><span class="text-[11px] text-slate-400">Flight Time Method</span></div>
+                            <div class="w-1/3 flex justify-end"><div class="w-11 h-11 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-700"><svg class="w-6 h-6 stroke-slate-800" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M5 10l7-7m0 0l7 7m-7-7v18" stroke-linecap="round" stroke-linejoin="round"></path></svg></div></div>
+                        </div>
+                        <div class="metric-card bg-white rounded-2xl p-4 sm:px-6 flex items-center justify-between border border-[#eff2f9]">
+                            <div class="flex items-baseline space-x-2 w-1/3"><span id="card-rsi" class="text-2xl font-bold text-slate-900 tracking-tight">--</span></div>
+                            <div class="w-1/3 text-center"><span class="text-sm font-semibold text-slate-700 block">Relative Strength Index (RSI)</span><span class="text-[11px] text-slate-400">Jump / Contraction Time</span></div>
+                            <div class="w-1/3 flex justify-end"><div class="w-11 h-11 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-700"><svg class="w-6 h-6 stroke-slate-800" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg></div></div>
+                        </div>
+                        <div class="metric-card bg-white rounded-2xl p-4 sm:px-6 flex items-center justify-between border border-[#eff2f9]">
+                            <div class="flex items-baseline space-x-2 w-1/3"><span id="card-eur" class="text-2xl font-bold text-slate-900 tracking-tight">--</span></div>
+                            <div class="w-1/3 text-center"><span class="text-sm font-semibold text-slate-700 block">Eccentric Utilization (EUR)</span><span class="text-[11px] text-slate-400">Stretch-Shortening Cycle Ratio</span></div>
+                            <div class="w-1/3 flex justify-end"><div class="w-11 h-11 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-700"><svg class="w-6 h-6 stroke-slate-800" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"></path></svg></div></div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- The Interactive Force/Velocity Curve Section -->
+                <section class="mt-8 bg-white rounded-3xl p-6 border border-[#eff2f9] metric-card w-full">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-100 gap-3">
+                        <div><span class="text-xs font-semibold uppercase tracking-wider text-indigo-600">Kinetic Waveform Analysis</span><h3 class="text-lg font-bold text-slate-800">Ground Reaction Force & Velocity vs. Time</h3></div>
+                    </div>
+                    <div class="relative w-full h-80 mt-4 pt-2">
+                        <!-- Dual Axis Chart -->
+                        <canvas id="forceVelocityChart" class="w-full h-full cursor-crosshair"></canvas>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column -->
+            <div class="lg:col-span-4 space-y-6">
+                <!-- Tier Card -->
+                <section class="bg-white rounded-3xl py-10 px-6 sm:px-8 border border-[#eff2f9] metric-card flex flex-col justify-between">
+                    <div class="flex items-center justify-between"><span class="text-xs font-bold uppercase tracking-wider text-slate-400">Biomechanics Tier</span><span class="px-2.5 py-1 text-xs font-bold rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100">Division 1 / Elite</span></div>
+                    <div class="my-4 text-center">
+                        <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-tr from-[#949ecb] to-[#c9d2f2] text-white shadow-inner mb-4">
+                            <span id="card-score" class="text-3xl font-black">--</span>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-800">Dynamic Neuromuscular Score</h4>
+                    </div>
+                    <div class="space-y-4 pt-6 border-t border-slate-100 text-xs">
+                        <div>
+                            <div class="flex justify-between text-slate-700 font-semibold mb-1.5"><span>Power-to-Mass Ratio</span><span id="card-ptm" class="text-indigo-600 font-bold">-- W/kg</span></div>
+                            <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-indigo-500 rounded-full" style="width: 100%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-slate-700 font-semibold mb-1.5"><span>Stretch-Shortening Efficiency</span><span id="card-ssc" class="text-indigo-600 font-bold">-- %</span></div>
+                            <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-indigo-500 rounded-full" style="width: 100%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-slate-700 font-semibold mb-1.5"><span>Landing Deceleration Symmetry</span><span id="card-sym" class="text-indigo-600 font-bold">-- %</span></div>
+                            <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-indigo-500 rounded-full" style="width: 100%"></div></div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- ElevateAI Coach Widget -->
+                <section class="bg-white rounded-3xl p-6 border border-[#eff2f9] metric-card flex flex-col h-[400px]">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                        <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                             ElevateAI Coach
+                        </h3>
+                        <span class="flex h-2.5 w-2.5 relative">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                        </span>
+                    </div>
+                    <div id="chatBox" class="flex-1 overflow-y-auto py-4 space-y-4 custom-scrollbar text-sm pr-2">
+                        <!-- AI messages populate here -->
+                    </div>
+                    <div class="pt-3 border-t border-slate-100 flex gap-2">
+                        <input type="text" id="chatInput" placeholder="Ask about your RSI or landing..." class="w-full text-sm rounded-xl border-slate-200 bg-slate-50 focus:bg-white focus:ring-1 focus:ring-indigo-500 outline-none p-3">
+                        <button onclick="sendChat()" class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition shadow-sm">Send</button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Dock -->
+    <footer class="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200/80 py-2.5 px-6 shadow-lg">
+        <div class="max-w-md mx-auto flex items-center justify-around">
+            <a class="flex flex-col items-center space-y-1 text-indigo-600 transition group" href="/index.html">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100"><svg class="w-6 h-6 stroke-indigo-600" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg></div>
+                <span class="text-[11px] font-semibold text-indigo-600">Home</span>
+            </a>
+            <a class="flex flex-col items-center -mt-5 transition group" href="/measure.html">
+                <div class="w-14 h-14 rounded-full bg-white shadow-xl border-4 border-[#eff2f9] flex items-center justify-center p-1 group-hover:scale-105 transition">
+                    <div class="w-full h-full rounded-full bg-gradient-to-tr from-[#8e97c9] to-[#aeb5df] flex items-center justify-center text-white shadow-sm"><svg class="w-7 h-7 stroke-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 8.5 2 15.5 12 22 22 15.5 22 8.5 12 2"></polygon><circle cx="12" cy="12" r="3.5"></circle></svg></div>
+                </div>
+                <span class="text-[11px] font-bold text-slate-800 mt-1">Measure</span>
+            </a>
+            <a class="flex flex-col items-center space-y-1 text-slate-600 hover:text-indigo-600 transition group" href="/record.html">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center group-hover:bg-slate-100"><svg class="w-6 h-6 stroke-slate-600 group-hover:stroke-indigo-600" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect height="18" rx="2" ry="2" width="18" x="3" y="4"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg></div>
+                <span class="text-[11px] font-semibold">Record</span>
+            </a>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Measure - Live Jump Recording | Kinematix</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+    <script>
+        tailwind.config = {
+          theme: { extend: { colors: { brand: { 50: '#f0f3ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc', 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81' }, periwinkle: { active: '#707fe6' } } } }
+        }
+    </script>
+    <style data-purpose="custom-animations">
+        @keyframes pulseRing { 0% { transform: scale(0.96); opacity: 0.9; } 50% { transform: scale(1.08); opacity: 0.4; } 100% { transform: scale(0.96); opacity: 0.9; } }
+        .pulse-shutter { animation: pulseRing 2.4s infinite ease-in-out; }
+    </style>
+</head>
+<body class="bg-[#f6f8fc] text-slate-800 font-sans antialiased min-h-screen pb-32 flex flex-col justify-between">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12 w-full space-y-6">
+        <section class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200">
+            <div>
+                <h1 class="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">Measure & Capture Studio</h1>
+                <p class="text-xs text-slate-500 mt-0.5">Real-time biomechanical skeleton estimation.</p>
+            </div>
+            <!-- REMOVED WEIGHT INPUT FROM HERE -->
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-bold bg-brand-100 text-brand-700 px-2 py-1 rounded">Live CMJ Tracker</span>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <section class="bg-slate-950 rounded-3xl overflow-hidden shadow-2xl relative border border-slate-800 flex flex-col justify-between aspect-[4/3] sm:aspect-[16/10] md:min-h-[580px] lg:col-span-12">
+                <div class="absolute inset-0 z-0 bg-gradient-to-b from-slate-900 via-[#181d2f] to-[#0c101d] overflow-hidden">
+                    <video id="webcam" autoplay playsinline muted class="absolute inset-0 w-full h-full object-cover"></video>
+                    <canvas id="webcamCanvas" class="absolute inset-0 w-full h-full z-10 pointer-events-none object-cover"></canvas>
+                    <div id="countdownOverlay" class="absolute inset-0 z-50 bg-black/70 hidden flex-col items-center justify-center text-6xl text-white font-bold tracking-widest">Ready</div>
+                </div>
+
+                <div class="relative z-10 p-5 flex items-center justify-between text-white bg-gradient-to-b from-black/70 via-black/30 to-transparent">
+                    <div class="flex items-center space-x-2 bg-black/40 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15 text-xs">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+                        <span class="font-mono font-bold tracking-wider text-slate-100">AI KINEMATICS ACTIVE</span>
+                    </div>
+                </div>
+
+                <div class="relative z-10 pb-7 flex flex-col items-center justify-center bg-gradient-to-t from-black/85 via-black/40 to-transparent pt-8">
+                    <div class="mb-4 px-4 py-1.5 rounded-full bg-black/60 text-white/90 text-xs font-medium border border-white/15">Tap button to record Countermovement Jump (CMJ)</div>
+                    <div class="relative flex items-center justify-center">
+                        <div class="absolute w-24 h-24 rounded-full border-2 border-brand-400/50 pulse-shutter pointer-events-none"></div>
+                        <div class="w-20 h-20 rounded-full border-[3px] border-white/90 p-1 flex items-center justify-center backdrop-blur-xs relative z-20">
+                            <button id="recordBtn" onclick="startCountdownAndRecord()" class="w-full h-full rounded-full bg-white hover:bg-slate-100 active:scale-90 transition-transform flex items-center justify-center group cursor-pointer" type="button">
+                                <div class="w-5 h-5 rounded-full bg-brand-600 group-hover:scale-110 transition-transform"></div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation Dock -->
+    <aside class="fixed bottom-0 left-0 right-0 z-50 pointer-events-none flex justify-center pb-5 px-4">
+        <nav class="pointer-events-auto bg-white/95 backdrop-blur-lg border border-slate-200/90 rounded-full shadow-lg px-8 py-2 flex items-center justify-between w-full max-w-md transition-all">
+            <a class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-800 transition-colors w-16 group" href="/index.html">
+                <div class="w-6 h-6 flex items-center justify-center mb-0.5 text-slate-600 group-hover:scale-110 transition-transform">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+                </div>
+                <span class="text-[11px] font-medium tracking-tight">Home</span>
+            </a>
+            <div class="relative -top-5 flex flex-col items-center">
+                <a class="relative group focus:outline-none" href="/measure.html">
+                    <div class="w-14 h-14 rounded-full bg-white shadow-lg p-1 flex items-center justify-center ring-4 ring-slate-100">
+                        <div class="w-full h-full rounded-full bg-periwinkle-active flex items-center justify-center text-white shadow-inner group-hover:scale-105 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24"><path d="M12 2l7.5 4.3v8.6L12 22l-7.5-4.3V6.3L12 2z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>
+                        </div>
+                    </div>
+                </a>
+                <span class="text-[11px] font-bold text-slate-900 mt-1 tracking-tight text-indigo-600">Measure</span>
+            </div>
+            <a class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-800 transition-colors w-16 group" href="/record.html">
+                <div class="w-6 h-6 flex items-center justify-center mb-0.5 text-slate-600 group-hover:scale-110 transition-transform">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect height="18" rx="2" ry="2" width="18" x="3" y="4"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+                </div>
+                <span class="text-[11px] font-medium tracking-tight">Record</span>
+            </a>
+        </nav>
+    </aside>
+    <script src="/app.js"></script>
+</body>
+</html>
