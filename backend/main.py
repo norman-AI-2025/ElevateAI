@@ -1,23 +1,29 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 from dotenv import load_dotenv
+
 load_dotenv()  # Loads variables from .env into your environment
+
 from backend.pose_engine import process_kinematics
 from backend.database import save_result, get_recent_history, get_profile, save_profile
 from backend.chat_engine import init_chat_session, send_message
 
 app = FastAPI()
 
+# Enable CORS for frontend communication (Netlify)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # We will restrict this to your Netlify URL once deployed
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class ChatRequest(BaseModel):
     message: str
-
-class ProfileData(BaseModel):
-    name: str
-    age: int
-    height_cm: float
-    weight_kg: float
 
 class JumpData(BaseModel):
     hip_y: List[float]
@@ -33,8 +39,9 @@ def read_profile():
     return {"exists": False}
 
 @app.post("/api/profile")
-def write_profile(prof: ProfileData):
-    save_profile(prof.dict())
+def write_profile(prof: dict):
+    # Accepting a raw 'dict' bypasses FastAPI's strict blocking
+    save_profile(prof)
     return {"success": True}
 
 @app.post("/api/analyze_data")

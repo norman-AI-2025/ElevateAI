@@ -1,8 +1,8 @@
+import os
 from google import genai
 from google.genai import errors
 from backend.database import get_recent_history
-
-client = genai.Client()
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 chat_session = None
 
 def init_chat_session():

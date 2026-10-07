@@ -1,53 +1,66 @@
-import csv
 import os
-import json
-from datetime import datetime
-import pandas as pd
+from dotenv import load_dotenv
+from supabase import create_client, Client
 
-PATH = "data/athlete_results.csv"
-PROFILE_PATH = "data/athlete_profile.json"
+# Load environment variables from .env file
+load_dotenv()
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise ValueError("Supabase credentials not found in .env file. Please check your configuration.")
+
+# Initialize the Supabase client
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def get_profile():
-    if os.path.exists(PROFILE_PATH):
-        with open(PROFILE_PATH, 'r') as f:
-            return json.load(f)
-    return None
+    """Fetch the most recently created athlete profile from the cloud."""
+    try:
+        response = supabase.table("athlete_profile").select("*").order("created_at", desc=True).limit(1).execute()
+        if response.data:
+            return response.data[0]
+        
+        # Return None so the frontend knows to trigger the setup popup
+        return None 
+    except Exception as e:
+        print(f"Error fetching profile: {e}")
+        return None
 
-def save_profile(data: dict):
-    os.makedirs("data", exist_ok=True)
-    with open(PROFILE_PATH, 'w') as f:
-        json.dump(data, f)
-    return data
+def save_profile(data):
+    """Save a new athlete profile to the cloud database."""
+    try:
+        # Strictly filter incoming frontend data to match the exact SQL columns
+        clean_data = {
+            "name": data.get("name", data.get("full_name", "Athlete")),
+            "age": data.get("age"),
+            "height_cm": data.get("height_cm", data.get("height")),
+            "weight_kg": data.get("weight_kg", data.get("weight"))
+        }
+        
+        # Remove any empty values so Supabase doesn't get confused
+        clean_data = {k: v for k, v in clean_data.items() if v is not None}
+        
+        response = supabase.table("athlete_profile").insert(clean_data).execute()
+        return response.data
+    except Exception as e:
+        print(f"Error saving profile: {e}")
+        return None
 
-def save_result(data: dict):
-    os.makedirs("data", exist_ok=True)
-    exists = os.path.isfile(PATH)
-    data_to_save = {"timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), **data}
-
-    if exists:
-        df = pd.read_csv(PATH)
-        if not df.empty:
-            last_row = df.iloc[-1]
-            for key in ["height_cm", "rsi", "max_force_n", "max_power_w", "power_to_mass", "score"]:
-                if key in last_row and key in data:
-                    data_to_save[f"diff_{key}"] = round(float(data[key]) - float(last_row[key]), 2)
-        else:
-            for key in ["height_cm", "rsi", "max_force_n", "max_power_w", "power_to_mass", "score"]:
-                data_to_save[f"diff_{key}"] = 0.0
-    else:
-        for key in ["height_cm", "rsi", "max_force_n", "max_power_w", "power_to_mass", "score"]:
-            data_to_save[f"diff_{key}"] = 0.0
-
-    with open(PATH, mode='a', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=data_to_save.keys())
-        if not exists:
-            writer.writeheader()
-        writer.writerow(data_to_save)
-
-    return data_to_save
+def save_result(data):
+    """Save a new jump test telemetry result to the cloud."""
+    try:
+        response = supabase.table("jump_history").insert(data).execute()
+        return response.data
+    except Exception as e:
+        print(f"Error saving result: {e}")
+        return None
 
 def get_recent_history():
-    if os.path.exists(PATH):
-        df = pd.read_csv(PATH)
-        return df.tail(10).fillna(0).to_dict(orient="records")
-    return []
+    """Fetch all jump history for the charts and historical tables."""
+    try:
+        response = supabase.table("jump_history").select("*").order("timestamp", desc=False).execute()
+        return response.data
+    except Exception as e:
+        print(f"Error fetching history: {e}")
+        return []
